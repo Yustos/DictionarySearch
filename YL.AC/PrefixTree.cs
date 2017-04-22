@@ -1,47 +1,54 @@
 using System;
+using System.Collections.Generic;
 
 namespace YL.AC
 {
-	public class PrefixTree
+	internal class PrefixTree
 	{
-		private readonly Node Root;
+		private readonly Node _root;
+		private readonly List<string> _patterns = new List<string>();
 
-		public PrefixTree(Node root)
+		internal PrefixTree(IEnumerable<string> patterns)
 		{
-			Root = root;
-		}
-
-		public long CountAllPositions(string s)
-		{
-			var count = 0L;
-			var u = Root;
-			for(int i=0;i<s.Length;i++){
-				u= GetMove(u, s[i]);
-				count += Count(u, i+1);
+			_root = new Node('_', null);
+			foreach (var pattern in patterns)
+			{
+				_root.Add(pattern, _patterns.Count);
+				_patterns.Add(pattern);
 			}
-			return count;
 		}
 
-		private long Count(Node v, int i)
+		internal IEnumerable<SearchResult> FindAll(string s)
 		{
-			var count = 0L;
-			for (var u = v; u != Root; u = GetSuffixMoveLink(u))
+			var u = _root;
+			for(int i = 0; i < s.Length; i++){
+				u = GetMove(u, s[i]);
+				foreach (var sr in Find(u, i+1))
+				{
+					yield return sr;
+				}
+			}
+		}
+
+		private IEnumerable<SearchResult> Find(Node v, int i)
+		{
+			for (var u = v; u != _root; u = GetSuffixMoveLink(u))
 			{
 				if (u.IsTerminal)
 				{
-					count++;
+					var match = _patterns[u.PatternIndex];
+					yield return new SearchResult(i - match.Length, u.PatternIndex, match);
 				}
 			}
-			return count;
 		}
 
 		private Node GetSuffixLink(Node node)
 		{
 			if (node.SuffixLink == null)
 			{
-				if (node == Root || node.Parent == Root)
+				if (node == _root || node.Parent == _root)
 				{
-					node.SuffixLink = Root;
+					node.SuffixLink = _root;
 				}
 				else
 				{
@@ -62,9 +69,9 @@ namespace YL.AC
 				}
 				else
 				{
-					if (node == Root)
+					if (node == _root)
 					{
-						node.Move[idx] = Root;
+						node.Move[idx] = _root;
 					}
 					else
 					{
@@ -80,9 +87,9 @@ namespace YL.AC
 			if (node.SuffixMoveLink == null)
 			{
 				var u = GetSuffixLink(node);
-				if (u == Root)
+				if (u == _root)
 				{
-					node.SuffixMoveLink = Root;
+					node.SuffixMoveLink = _root;
 				}
 				else
 				{
@@ -91,7 +98,5 @@ namespace YL.AC
 			}
 			return node.SuffixMoveLink;
 		}
-
-
 	}
 }

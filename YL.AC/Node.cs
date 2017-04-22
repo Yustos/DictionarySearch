@@ -2,29 +2,31 @@
 
 namespace YL.AC
 {
-	public class Node
+	internal class Node
 	{
-		public readonly char C;
+		internal readonly char C;
 
-		public readonly Node[] Childrens = new Node[10];
+		internal readonly Node[] Childrens = new Node[10];
 
-		public bool IsTerminal;
+		internal bool IsTerminal;
 
-		public Node SuffixLink = null;
+		internal int PatternIndex;
 
-		public Node Parent = null;
+		internal Node SuffixLink = null;
 
-		public Node[] Move = new Node[10];
+		internal Node Parent = null;
 
-		public Node SuffixMoveLink;
+		internal Node[] Move = new Node[10];
 
-		public Node(char c, Node parent)
+		internal Node SuffixMoveLink;
+
+		internal Node(char c, Node parent)
 		{
 			C = c;
 			Parent = parent;
 		}
 
-		public void Add(string s)
+		internal void Add(string s, int patternIndex)
 		{
 			var node = this;
 			foreach (var c in s)
@@ -39,9 +41,10 @@ namespace YL.AC
 				node = nextNode;
 			}
 			node.IsTerminal = true;
+			node.PatternIndex = patternIndex;
 		}
 
-		public bool IsString(string s)
+		internal bool IsString(string s)
 		{
 			var node = this;
 			foreach (var c in s)

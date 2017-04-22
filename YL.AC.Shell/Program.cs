@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace YL.AC.Shell
 {
@@ -10,18 +11,20 @@ namespace YL.AC.Shell
 			var stream = Console.In;
 			Console.WriteLine("Start");
 			Console.WriteLine("Patterns:");
-			var root = new Node('_', null);
+			var patterns = new List<string>();
 			string patternLine;
 			while (!string.IsNullOrEmpty(patternLine = stream.ReadLine()))
 			{
-				root.Add(patternLine);
+				patterns.Add(patternLine);
 			}
 
 			Console.WriteLine("String:");
 			var line = stream.ReadLine();
-			var pt = new PrefixTree(root);
-			var count = pt.CountAllPositions(line);
-			Console.WriteLine(count);
+			var result = Search.Find(line, patterns);
+			foreach (var r in result)
+			{
+				Console.WriteLine("{0}: {1} [{2}]", r.Position, r.Match, r.PatternIndex);
+			}
 			Console.WriteLine("Finish");
 		}
 	}
