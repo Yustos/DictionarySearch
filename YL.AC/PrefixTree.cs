@@ -60,26 +60,26 @@ namespace YL.AC
 
 		private Node GetMove(Node node, char c)
 		{
-			var idx = c - '0';
-			if (node.Move[idx] == null)
+			if (!node.Move.TryGetValue(c, out Node nextMove))
 			{
-				if (node.Childrens[idx] != null)
+				if (node.Childrens.TryGetValue(c, out Node nextNode))
 				{
-					node.Move[idx] = node.Childrens[idx];
+					nextMove = nextNode;
 				}
 				else
 				{
 					if (node == _root)
 					{
-						node.Move[idx] = _root;
+						nextMove = _root;
 					}
 					else
 					{
-						node.Move[idx] = GetMove(GetSuffixLink(node), c);
+						nextMove = GetMove(GetSuffixLink(node), c);
 					}
 				}
 			}
-			return node.Move[idx];
+			node.Move[c] = nextMove;
+			return nextMove;
 		}
 
 		private Node GetSuffixMoveLink(Node node)

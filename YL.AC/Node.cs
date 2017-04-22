@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace YL.AC
 {
@@ -6,7 +7,7 @@ namespace YL.AC
 	{
 		internal readonly char C;
 
-		internal readonly Node[] Childrens = new Node[10];
+		internal readonly Dictionary<char, Node> Childrens = new Dictionary<char, Node>();
 
 		internal bool IsTerminal;
 
@@ -16,7 +17,7 @@ namespace YL.AC
 
 		internal Node Parent = null;
 
-		internal Node[] Move = new Node[10];
+		internal Dictionary<char, Node> Move = new Dictionary<char, Node>();
 
 		internal Node SuffixMoveLink;
 
@@ -31,36 +32,15 @@ namespace YL.AC
 			var node = this;
 			foreach (var c in s)
 			{
-				var idx = c - '0';
-				var nextNode = node.Childrens[idx];
-				if (nextNode == null)
+				if (!node.Childrens.TryGetValue(c, out Node nextNode))
 				{
 					nextNode = new Node(c, node);
-					node.Childrens[idx] = nextNode;
+					node.Childrens[c] = nextNode;
 				}
 				node = nextNode;
 			}
 			node.IsTerminal = true;
 			node.PatternIndex = patternIndex;
-		}
-
-		internal bool IsString(string s)
-		{
-			var node = this;
-			foreach (var c in s)
-			{
-				var idx = c - '0';
-				var nextNode = node.Childrens[idx];
-				if (nextNode != null)
-				{
-					node = nextNode;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			return node.IsTerminal;
 		}
 	}
 }
