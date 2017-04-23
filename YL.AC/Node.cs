@@ -29,6 +29,10 @@ namespace YL.AC
 
 		internal void Add(string s, int patternIndex)
 		{
+			if (string.IsNullOrEmpty(s))
+			{
+				return;
+			}
 			var node = this;
 			foreach (var c in s)
 			{
